@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  keycloak_db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak_user
+      POSTGRES_PASSWORD: keycloak_password
+    volumes:
+      - ./postgres-keycloak-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak_db:5432/keycloak_db
+      KC_DB_USERNAME: keycloak_user
+      KC_DB_PASSWORD: keycloak_password
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak_db
+  service1:
+    build:
+      context: ./service1
+      dockerfile: Dockerfile.native-micro
+    environment:
+      - QUARKUS_OIDC_AUTH_SERVER_URL=${AUTH_SERVER_URL}
+      - QUARKUS_OIDC_APPLICATION_TYPE=${APPLICATION_TYPE}
+      - QUARKUS_OIDC_TOKEN_ISSUER=${TOKEN_ISSUER}
+      - QUARKUS_OIDC_CREDENTIALS_JWT_SOURCE=${CREDENTIALS_JWT_SOURCE}
+      - QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH=${ROLES_ROLE_CLAIM_PATH}
+      - APP_ROLE_REPORTS=prothetic_user
+      # - QUARKUS_LOG_LEVEL=DEBUG
+    ports:
+      - 8001:8080
+  service2:
+    build:
+      context: ./service2
+      dockerfile: Dockerfile.native-micro
+    environment:
+      - QUARKUS_OIDC_AUTH_SERVER_URL=${AUTH_SERVER_URL}
+      - QUARKUS_OIDC_APPLICATION_TYPE=${APPLICATION_TYPE}
+      - QUARKUS_OIDC_TOKEN_ISSUER=${TOKEN_ISSUER}
+      - QUARKUS_OIDC_CREDENTIALS_JWT_SOURCE=${CREDENTIALS_JWT_SOURCE}
+      - QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH=${ROLES_ROLE_CLAIM_PATH}
+      - APP_ROLE_REPORTS=prothetic_user
+      # - QUARKUS_LOG_LEVEL=DEBUG
+    ports:
+      - 8002:8080
