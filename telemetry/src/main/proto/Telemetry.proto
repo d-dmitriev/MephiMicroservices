@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "home.work";
+option java_outer_classname = "TelemetryProto";
+
+package telemetry;
+
+service Telemetry {
+    rpc GetTelemetry (GetTelemetryRequest) returns (GetTelemetryReply) {}
+    rpc GetLatestTelemetry (GetLatestTelemetryRequest) returns (GetLatestTelemetryReply) {}
+}
+
+message GetTelemetryRequest {
+    string id = 1;
+}
+
+message GetLatestTelemetryRequest {
+    string id = 1;
+}
+
+message GetTelemetryReply {
+    string id = 1;
+    repeated TelemetryItem telemetry = 2;
+}
+
+message GetLatestTelemetryReply {
+    string id = 1;
+    TelemetryItem telemetry = 2;
+}
+
+message TelemetryItem {
+    float currentTemperature = 1;
+    int64 lastUpdate = 2;
+}

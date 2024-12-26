@@ -29,31 +29,29 @@ services:
       - "8080:8080"
     depends_on:
       - keycloak_db
-  service1:
+  control_devices:
     build:
-      context: ./service1
-      dockerfile: Dockerfile.native-micro
+      context: ./control-devices
     environment:
       - QUARKUS_OIDC_AUTH_SERVER_URL=${AUTH_SERVER_URL}
       - QUARKUS_OIDC_APPLICATION_TYPE=${APPLICATION_TYPE}
       - QUARKUS_OIDC_TOKEN_ISSUER=${TOKEN_ISSUER}
       - QUARKUS_OIDC_CREDENTIALS_JWT_SOURCE=${CREDENTIALS_JWT_SOURCE}
       - QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH=${ROLES_ROLE_CLAIM_PATH}
-      - APP_ROLE_REPORTS=prothetic_user
+      - APP_ROLE_CONTROL_DEVICES=prothetic_user
       # - QUARKUS_LOG_LEVEL=DEBUG
     ports:
       - 8001:8080
-  service2:
+  telemetry:
     build:
-      context: ./service2
-      dockerfile: Dockerfile.native-micro
+      context: ./telemetry
     environment:
       - QUARKUS_OIDC_AUTH_SERVER_URL=${AUTH_SERVER_URL}
       - QUARKUS_OIDC_APPLICATION_TYPE=${APPLICATION_TYPE}
       - QUARKUS_OIDC_TOKEN_ISSUER=${TOKEN_ISSUER}
       - QUARKUS_OIDC_CREDENTIALS_JWT_SOURCE=${CREDENTIALS_JWT_SOURCE}
       - QUARKUS_OIDC_ROLES_ROLE_CLAIM_PATH=${ROLES_ROLE_CLAIM_PATH}
-      - APP_ROLE_REPORTS=prothetic_user
+      - APP_ROLE_TELEMETRY=prothetic_user
       # - QUARKUS_LOG_LEVEL=DEBUG
     ports:
       - 8002:8080
